@@ -3,20 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Room Navigator</title>
+    <title>ICT University - Campus Room Navigator</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/roomComponents.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <!-- Lottie Animation Library -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <h1>Campus Navigator</h1>
+                <img src="public/image.png" alt="ICT University Logo" class="logo-img">
+                <div class="brand-text">
+                    <h1>ICT University</h1>
+                    <span class="brand-subtitle">Campus Navigator</span>
+                </div>
             </div>
             <ul class="nav-menu">
-                <li><a href="#" onclick="showPage('home')" class="nav-link active">Home</a></li>
-                <li><a href="#" onclick="showPage('map')" class="nav-link">Room Map</a></li>
-                <li><a href="#" onclick="showPage('admin')" class="nav-link">Admin</a></li>
+                <li><a href="#" onclick="showPage('home')" class="nav-link active">
+                    <span class="nav-icon">🏠</span>Home
+                </a></li>
+                <li><a href="#" onclick="showPage('map')" class="nav-link">
+                    <span class="nav-icon">🗺️</span>Room Map
+                </a></li>
+                <li><a href="#" onclick="showPage('admin')" class="nav-link" id="admin-nav-link">
+                    <span class="nav-icon">⚙️</span>Admin
+                </a></li>
             </ul>
         </div>
     </nav>
@@ -26,43 +39,110 @@
         <div id="home-page" class="page active">
             <section class="hero">
                 <div class="hero-content">
-                    <h1>Welcome to Campus Room Navigator</h1>
-                    <p>Your comprehensive guide to finding and navigating campus rooms with detailed capacity information and interactive features</p>
-                    <button class="cta-button" onclick="showPage('map')">Explore Room Map</button>
+                    <div class="hero-animation">
+                        <lottie-player
+                            src="https://assets2.lottiefiles.com/packages/lf20_V9t630.json"
+                            background="transparent"
+                            speed="1"
+                            style="width: 200px; height: 200px;"
+                            loop
+                            autoplay>
+                        </lottie-player>
+                    </div>
+                    <h1 class="fade-in-up">Welcome to ICT University Campus Navigator</h1>
+                    <p class="fade-in-up delay-1">Your comprehensive guide to finding and navigating campus rooms with detailed capacity information and interactive features</p>
+                    <button class="cta-button fade-in-up delay-2" onclick="showPage('map')">
+                        <span class="button-icon">🚀</span>
+                        Explore Room Map
+                    </button>
                 </div>
             </section>
 
             <section class="features">
                 <div class="container">
-                    <h2>Application Features</h2>
+                    <h2 class="fade-in-up">Application Features</h2>
                     <div class="feature-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon">🗺️</div>
+                        <div class="feature-card slide-in-left">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_DMgKk1.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Multi-Floor Interactive Map</h3>
                             <p>Navigate through detailed floor plans across multiple levels with interactive room highlighting and search functionality</p>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">👥</div>
+                        <div class="feature-card slide-in-up">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Room Capacity Information</h3>
                             <p>View detailed room information including capacity, type, amenities, and descriptions for better planning</p>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔍</div>
+                        <div class="feature-card slide-in-right">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets1.lottiefiles.com/packages/lf20_wp8h3pwq.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Smart Search & Filter</h3>
                             <p>Quickly find specific rooms, halls, or facilities using our intelligent search system with type filtering</p>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🎯</div>
+                        <div class="feature-card slide-in-left delay-1">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets8.lottiefiles.com/packages/lf20_fcfjwiyb.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Room Highlighting</h3>
                             <p>Select and highlight multiple rooms simultaneously with detailed information panels</p>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔧</div>
+                        <div class="feature-card slide-in-up delay-1">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets3.lottiefiles.com/packages/lf20_qp1q7mct.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Zoom & Pan Controls</h3>
                             <p>Detailed view controls with zoom in/out and pan functionality for precise navigation</p>
                         </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">⚙️</div>
+                        <div class="feature-card slide-in-right delay-1">
+                            <div class="feature-icon-container">
+                                <lottie-player
+                                    src="https://assets5.lottiefiles.com/packages/lf20_V9t630.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 80px; height: 80px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                            </div>
                             <h3>Admin Management</h3>
                             <p>Comprehensive admin dashboard for managing room data, tracking usage, and analytics</p>
                         </div>
@@ -72,31 +152,31 @@
 
             <section class="instructions">
                 <div class="container">
-                    <h2>How to Use</h2>
+                    <h2 class="fade-in-up">How to Use</h2>
                     <div class="instruction-steps">
-                        <div class="step">
-                            <div class="step-number">1</div>
+                        <div class="step slide-in-left">
+                            <div class="step-number pulse">1</div>
                             <div class="step-content">
                                 <h3>Access the Room Map</h3>
                                 <p>Click on "Room Map" in the navigation or use the "Explore Room Map" button above</p>
                             </div>
                         </div>
-                        <div class="step">
-                            <div class="step-number">2</div>
+                        <div class="step slide-in-right">
+                            <div class="step-number pulse delay-1">2</div>
                             <div class="step-content">
                                 <h3>Select Floor & Search</h3>
                                 <p>Choose your desired floor and use the search box to filter rooms by name or select from the dropdown list</p>
                             </div>
                         </div>
-                        <div class="step">
-                            <div class="step-number">3</div>
+                        <div class="step slide-in-left">
+                            <div class="step-number pulse delay-2">3</div>
                             <div class="step-content">
                                 <h3>View Room Information</h3>
                                 <p>Click on any room to see detailed information including capacity, amenities, and descriptions</p>
                             </div>
                         </div>
-                        <div class="step">
-                            <div class="step-number">4</div>
+                        <div class="step slide-in-right">
+                            <div class="step-number pulse delay-3">4</div>
                             <div class="step-content">
                                 <h3>Navigate & Highlight</h3>
                                 <p>Use zoom controls for detailed views, highlight multiple rooms, and display capacity information</p>
@@ -116,31 +196,123 @@
             </div>
         </div>
 
+        <!-- Admin Login Modal -->
+        <div id="admin-login-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content admin-login-modal">
+                <div class="modal-header">
+                    <h3>🔐 Admin Access Required</h3>
+                    <button class="close-modal" onclick="closeAdminLogin()">&times;</button>
+                </div>
+                <div class="admin-login-form">
+                    <div class="login-animation">
+                        <lottie-player
+                            src="https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json"
+                            background="transparent"
+                            speed="1"
+                            style="width: 100px; height: 100px;"
+                            loop
+                            autoplay>
+                        </lottie-player>
+                    </div>
+                    <p>Please enter the admin password to access the dashboard:</p>
+                    <form onsubmit="validateAdminLogin(event)">
+                        <div class="form-group">
+                            <input type="password" id="admin-password" placeholder="Enter admin password" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="closeAdminLogin()">Cancel</button>
+                            <button type="submit" class="btn-primary">Access Dashboard</button>
+                        </div>
+                    </form>
+                    <div id="login-error" class="error-message" style="display: none;">
+                        Incorrect password. Please try again.
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Admin Page -->
         <div id="admin-page" class="page">
             <div class="admin-container">
                 <div class="admin-header">
-                    <h2>Admin Dashboard</h2>
+                    <div class="admin-title-section">
+                        <lottie-player
+                            src="https://assets5.lottiefiles.com/packages/lf20_V9t630.json"
+                            background="transparent"
+                            speed="1"
+                            style="width: 60px; height: 60px;"
+                            loop
+                            autoplay>
+                        </lottie-player>
+                        <h2>Admin Dashboard</h2>
+                    </div>
                     <div class="admin-controls">
-                        <button onclick="clearActivityLog()" class="btn-danger">Clear Log</button>
-                        <button onclick="exportActivityLog()" class="btn-secondary">Export Data</button>
+                        <button onclick="clearActivityLog()" class="btn-danger">
+                            <span class="button-icon">🗑️</span>Clear Log
+                        </button>
+                        <button onclick="exportActivityLog()" class="btn-secondary">
+                            <span class="button-icon">📊</span>Export Data
+                        </button>
+                        <button onclick="logoutAdmin()" class="btn-logout">
+                            <span class="button-icon">🚪</span>Logout
+                        </button>
                     </div>
                 </div>
 
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card bounce-in">
+                        <div class="stat-icon">
+                            <lottie-player
+                                src="https://assets1.lottiefiles.com/packages/lf20_wp8h3pwq.json"
+                                background="transparent"
+                                speed="1"
+                                style="width: 40px; height: 40px;"
+                                loop
+                                autoplay>
+                            </lottie-player>
+                        </div>
                         <h3>Total Page Views</h3>
                         <div class="stat-number" id="total-views">0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card bounce-in delay-1">
+                        <div class="stat-icon">
+                            <lottie-player
+                                src="https://assets9.lottiefiles.com/packages/lf20_DMgKk1.json"
+                                background="transparent"
+                                speed="1"
+                                style="width: 40px; height: 40px;"
+                                loop
+                                autoplay>
+                            </lottie-player>
+                        </div>
                         <h3>Map Interactions</h3>
                         <div class="stat-number" id="map-interactions">0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card bounce-in delay-2">
+                        <div class="stat-icon">
+                            <lottie-player
+                                src="https://assets8.lottiefiles.com/packages/lf20_fcfjwiyb.json"
+                                background="transparent"
+                                speed="1"
+                                style="width: 40px; height: 40px;"
+                                loop
+                                autoplay>
+                            </lottie-player>
+                        </div>
                         <h3>Room Searches</h3>
                         <div class="stat-number" id="room-searches">0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card bounce-in delay-3">
+                        <div class="stat-icon">
+                            <lottie-player
+                                src="https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json"
+                                background="transparent"
+                                speed="1"
+                                style="width: 40px; height: 40px;"
+                                loop
+                                autoplay>
+                            </lottie-player>
+                        </div>
                         <h3>Active Sessions Today</h3>
                         <div class="stat-number" id="active-sessions">0</div>
                     </div>
@@ -148,15 +320,15 @@
 
                 <!-- Room Management Section will be inserted here by adminRoomManager.js -->
 
-                <div class="activity-section">
-                    <h3>Recent Activity</h3>
+                <div class="activity-section slide-in-up">
+                    <h3>📊 Recent Activity</h3>
                     <div class="activity-log" id="activity-log">
                         <!-- Activity entries will be populated here -->
                     </div>
                 </div>
 
-                <div class="charts-section">
-                    <h3>Usage Analytics</h3>
+                <div class="charts-section slide-in-up delay-1">
+                    <h3>📈 Usage Analytics</h3>
                     <div class="chart-container">
                         <canvas id="usage-chart" width="400" height="200"></canvas>
                     </div>
@@ -167,7 +339,10 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Campus Room Navigator. All rights reserved.</p>
+            <div class="footer-content">
+                <img src="public/image.png" alt="ICT University Logo" class="footer-logo">
+                <p>&copy; 2025 ICT University - Campus Room Navigator. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 

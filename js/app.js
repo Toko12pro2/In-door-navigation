@@ -3,21 +3,27 @@ class CampusNavigator {
     constructor() {
         this.currentPage = 'home';
         this.analytics = new Analytics();
+        this.isAdminAuthenticated = false;
+        this.adminPassword = 'ictuniversity2025'; // Admin password
         this.init();
     }
 
     init() {
         this.loadMapContent();
         this.setupEventListeners();
+        this.setupAdminAuth();
         this.analytics.trackPageView('home');
+        this.initializeAnimations();
     }
 
     setupEventListeners() {
         // Track navigation clicks
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
-                const page = e.target.getAttribute('onclick').match(/'([^']+)'/)[1];
-                this.analytics.trackPageView(page);
+                const page = e.target.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                if (page) {
+                    this.analytics.trackPageView(page);
+                }
             });
         });
 
@@ -25,70 +31,233 @@ class CampusNavigator {
         document.querySelector('.cta-button')?.addEventListener('click', () => {
             this.analytics.trackEvent('cta_click', 'Explore Room Map button clicked');
         });
+
+        // Setup admin navigation
+        document.getElementById('admin-nav-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.handleAdminAccess();
+        });
+    }
+
+    setupAdminAuth() {
+        // Admin login functions
+        window.validateAdminLogin = (event) => {
+            event.preventDefault();
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (password === this.adminPassword) {
+                this.isAdminAuthenticated = true;
+                this.closeAdminLogin();
+                this.showPage('admin');
+                this.analytics.trackEvent('admin_login', 'Admin successfully logged in');
+                
+                // Show success notification
+                this.showNotification('Welcome to Admin Dashboard! 🎉', 'success');
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.classList.add('shake');
+                document.getElementById('admin-password').value = '';
+                document.getElementById('admin-password').focus();
+                
+                setTimeout(() => {
+                    errorDiv.classList.remove('shake');
+                }, 500);
+                
+                this.analytics.trackEvent('admin_login_failed', 'Failed admin login attempt');
+            }
+        };
+
+        window.closeAdminLogin = () => {
+            const modal = document.getElementById('admin-login-modal');
+            modal.style.display = 'none';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('login-error').style.display = 'none';
+        };
+
+        window.logoutAdmin = () => {
+            if (confirm('Are you sure you want to logout from admin dashboard?')) {
+                this.isAdminAuthenticated = false;
+                this.showPage('home');
+                this.analytics.trackEvent('admin_logout', 'Admin logged out');
+                this.showNotification('Logged out successfully! 👋', 'info');
+            }
+        };
+    }
+
+    handleAdminAccess() {
+        if (this.isAdminAuthenticated) {
+            this.showPage('admin');
+        } else {
+            document.getElementById('admin-login-modal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('admin-password').focus();
+            }, 100);
+        }
+    }
+
+    initializeAnimations() {
+        // Initialize intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.fade-in-up, .slide-in-left, .slide-in-right, .slide-in-up, .bounce-in').forEach(el => {
+            observer.observe(el);
+        });
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type} notification-enter`;
+        
+        // Add icon based on type
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        
+        notification.innerHTML = `
+            <span class="notification-icon">${icons[type] || icons.info}</span>
+            <span class="notification-text">${message}</span>
+        `;
+        
+        // Style the notification
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            padding: '15px 20px',
+            borderRadius: '10px',
+            color: 'white',
+            fontWeight: '500',
+            zIndex: '10000',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            minWidth: '250px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            backdropFilter: 'blur(10px)'
+        });
+
+        // Set background color based on type
+        const colors = {
+            success: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+            error: 'linear-gradient(135deg, #dc3545 0%, #e74c3c 100%)',
+            warning: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',
+            info: 'linear-gradient(135deg, #17a2b8 0%, #667eea 100%)'
+        };
+        notification.style.background = colors[type] || colors.info;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Remove after 4 seconds
+        setTimeout(() => {
+            notification.classList.remove('notification-enter');
+            notification.classList.add('notification-exit');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
     }
 
     loadMapContent() {
         const mapContent = `
             <div class="map-content-wrapper">
-                <h2>Campus Room Navigator</h2>
+                <h2>🗺️ ICT University Campus Navigator</h2>
                 <div class="map-controls">
                     <div class="control-group">
-                        <input id="roomSearch" onkeyup="filterRooms()" placeholder="Search rooms..." 
-                               style="margin-bottom: 8px; padding: 8px; font-size: 16px; width: 240px; border: 1px solid #ddd; border-radius: 5px;" type="text"/>
-                        <select id="roomSelect" multiple size="6" style="width: 250px; padding: 5px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="IT_HALL">IT Hall</option>
-                            <option value="TERRY_&_LINDA_BYRD_HALL">Terry & Linda Byrd Hall</option>
-                            <option value="COMPUTER_LAB">Computer Lab</option>
-                            <option value="CISCO_LAB">Cisco Lab</option>
-                            <option value="B.S._CHUMBOW_HALL">B.S. Chumbow Hall</option>
-                            <option value="RESTROOMS">Restrooms</option>
-                            <option value="STAIRS_TO_FIRST_FLOOR">Stairs to First Floor</option>
-                            <option value="STAIRS_TO_THIRD_FLOOR">Stairs to Third Floor</option>
-                            <option value="Marketing/PR_Department">Marketing/PR Department</option>
-                            <option value="George_M_Mbarika,_Sr">George M Mbarika, Sr</option>
-                            <option value="Marketing/Admissions">Marketing/Admissions</option>
-                            <option value="Admissions">Admissions</option>
-                            <option value="Sick_Bay">Sick Bay</option>
-                            <option value="Regina_M_Mbarika">Regina M Mbarika</option>
-                            <option value="George_M_Mbarika,_Sr_Hall">George M Mbarika, Sr Hall</option>
-                            <option value="Stairs">Stairs</option>
-                            <option value="Restrooms">Restrooms</option>
-                            <option value="Cantine">Cantine</option>
-                            <option value="Pondi_Hall">Pondi Hall</option>
-                            <option value="Lounge">Lounge</option>
-                            <option value="Basement_Stairs_up">Basement Stairs up</option>
-                            <option value="Basement_Stairs_down">Basement Stairs down</option>
-                            <option value="Basement">Basement</option>
-                            <option value="VICE-CHANCELLORS_OFFICE">Vice-Chancellor's Office</option>
-                            <option value="PA_TO_THE_VC">P.A. to the VC</option>
-                            <option value="CONFERENCE_HALL">Conference Hall</option>
-                            <option value="DIR_OF_MARKETING">Dir. of Marketing</option>
-                            <option value="FINANCE_OFFICE">Finance Office</option>
-                            <option value="BURSARY">Bursary</option>
-                            <option value="QUALITY_CONTROL">Quality Control</option>
-                            <option value="ADMINISTRATIVE_ASSISTANT">Administrative Assistant</option>
-                            <option value="DEPUTY_VICE-CHANCELLOR">Deputy Vice-Chancellor</option>
-                            <option value="Stairs_Up">Stairs Up</option>
-                            <option value="Stairs_Down">Stairs Down</option>
+                        <input id="roomSearch" onkeyup="filterRooms()" placeholder="🔍 Search rooms..." 
+                               style="margin-bottom: 8px; padding: 12px; font-size: 16px; width: 240px; border: 2px solid #ddd; border-radius: 8px;" type="text"/>
+                        <select id="roomSelect" multiple size="6" style="width: 250px; padding: 8px; border: 2px solid #ddd; border-radius: 8px;">
+                            <option value="IT_HALL">🏛️ IT Hall</option>
+                            <option value="TERRY_&_LINDA_BYRD_HALL">🏛️ Terry & Linda Byrd Hall</option>
+                            <option value="COMPUTER_LAB">💻 Computer Lab</option>
+                            <option value="CISCO_LAB">🌐 Cisco Lab</option>
+                            <option value="B.S._CHUMBOW_HALL">🏛️ B.S. Chumbow Hall</option>
+                            <option value="RESTROOMS">🚻 Restrooms</option>
+                            <option value="STAIRS_TO_FIRST_FLOOR">🪜 Stairs to First Floor</option>
+                            <option value="STAIRS_TO_THIRD_FLOOR">🪜 Stairs to Third Floor</option>
+                            <option value="Marketing/PR_Department">📢 Marketing/PR Department</option>
+                            <option value="George_M_Mbarika,_Sr">👤 George M Mbarika, Sr</option>
+                            <option value="Marketing/Admissions">📝 Marketing/Admissions</option>
+                            <option value="Admissions">🎓 Admissions</option>
+                            <option value="Sick_Bay">🏥 Sick Bay</option>
+                            <option value="Regina_M_Mbarika">👤 Regina M Mbarika</option>
+                            <option value="George_M_Mbarika,_Sr_Hall">🏛️ George M Mbarika, Sr Hall</option>
+                            <option value="Stairs">🪜 Stairs</option>
+                            <option value="Restrooms">🚻 Restrooms</option>
+                            <option value="Cantine">🍽️ Cantine</option>
+                            <option value="Pondi_Hall">🏛️ Pondi Hall</option>
+                            <option value="Lounge">🛋️ Lounge</option>
+                            <option value="Basement_Stairs_up">🪜 Basement Stairs up</option>
+                            <option value="Basement_Stairs_down">🪜 Basement Stairs down</option>
+                            <option value="Basement">🏠 Basement</option>
+                            <option value="VICE-CHANCELLORS_OFFICE">🏢 Vice-Chancellor's Office</option>
+                            <option value="PA_TO_THE_VC">👩‍💼 P.A. to the VC</option>
+                            <option value="CONFERENCE_HALL">🏛️ Conference Hall</option>
+                            <option value="DIR_OF_MARKETING">📊 Dir. of Marketing</option>
+                            <option value="FINANCE_OFFICE">💰 Finance Office</option>
+                            <option value="BURSARY">🏦 Bursary</option>
+                            <option value="QUALITY_CONTROL">✅ Quality Control</option>
+                            <option value="ADMINISTRATIVE_ASSISTANT">👩‍💼 Administrative Assistant</option>
+                            <option value="DEPUTY_VICE-CHANCELLOR">🏢 Deputy Vice-Chancellor</option>
+                            <option value="Stairs_Up">🪜 Stairs Up</option>
+                            <option value="Stairs_Down">🪜 Stairs Down</option>
                         </select>
                     </div>
                     <div class="control-buttons">
-                        <button onclick="highlightSelected()">Highlight Selected</button>
-                        <button onclick="resetHighlights()">Reset</button>
-                        <button onclick="showRoomCapacities()">Show Capacities</button>
+                        <button onclick="highlightSelected()" class="btn-animated">
+                            <span class="button-icon">🎯</span>Highlight Selected
+                        </button>
+                        <button onclick="resetHighlights()" class="btn-animated">
+                            <span class="button-icon">🔄</span>Reset
+                        </button>
+                        <button onclick="showRoomCapacities()" class="btn-animated">
+                            <span class="button-icon">👥</span>Show Capacities
+                        </button>
                     </div>
                 </div>
                 <div class="floor-selector">
-                    <button onclick="showFloor('second')" class="floor-btn active" id="floor-second">Second Floor</button>
-                    <button onclick="showFloor('first')" class="floor-btn" id="floor-first">First Floor</button>
-                    <button onclick="showFloor('basement')" class="floor-btn" id="floor-basement">Basement</button>
-                    <button onclick="showFloor('fourth')" class="floor-btn" id="floor-fourth">Fourth Floor</button>
+                    <button onclick="showFloor('second')" class="floor-btn active hover-lift" id="floor-second">
+                        <span class="button-icon">2️⃣</span>Second Floor
+                    </button>
+                    <button onclick="showFloor('first')" class="floor-btn hover-lift" id="floor-first">
+                        <span class="button-icon">1️⃣</span>First Floor
+                    </button>
+                    <button onclick="showFloor('basement')" class="floor-btn hover-lift" id="floor-basement">
+                        <span class="button-icon">🏠</span>Basement
+                    </button>
+                    <button onclick="showFloor('fourth')" class="floor-btn hover-lift" id="floor-fourth">
+                        <span class="button-icon">4️⃣</span>Fourth Floor
+                    </button>
                 </div>
                 <div id="svgContainer">
                     <div class="zoom-controls">
-                        <button onclick="zoom(1.2)">Zoom In</button>
-                        <button onclick="zoom(0.8)">Zoom Out</button>
-                        <button onclick="resetZoom()">Reset View</button>
+                        <button onclick="zoom(1.2)" class="hover-scale">
+                            <span class="button-icon">🔍</span>Zoom In
+                        </button>
+                        <button onclick="zoom(0.8)" class="hover-scale">
+                            <span class="button-icon">🔍</span>Zoom Out
+                        </button>
+                        <button onclick="resetZoom()" class="hover-scale">
+                            <span class="button-icon">🎯</span>Reset View
+                        </button>
                     </div>
                     <div class="zoom-wrapper">
                         <svg fill="none" height="1024" id="zoomSvg" viewBox="0 0 1440 1024" width="1440" xmlns="http://www.w3.org/2000/svg">
@@ -145,35 +314,35 @@ class CampusNavigator {
                                 </defs>
                                 
                                 <!-- Room Groups with Click Handlers -->
-                                <g id="IT_HALL" class="room-clickable">
+                                <g id="IT_HALL" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="448" width="493" x="0.5" y="0.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="247.0" y="224.5">IT HALL</text>
                                 </g>
-                                <g id="TERRY_&_LINDA_BYRD_HALL" class="room-clickable">
+                                <g id="TERRY_&_LINDA_BYRD_HALL" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="448" width="469" x="494.5" y="0.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="27" font-weight="bold" text-anchor="middle" x="729.0" y="224.5">TERRY & LINDA BYRD HALL</text>
                                 </g>
-                                <g id="COMPUTER_LAB" class="room-clickable">
+                                <g id="COMPUTER_LAB" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="448" width="475" x="964.5" y="0.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="1202.0" y="224.5">COMPUTER LAB</text>
                                 </g>
-                                <g id="B.S._CHUMBOW_HALL" class="room-clickable">
+                                <g id="B.S._CHUMBOW_HALL" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="269" width="127" x="607.5" y="754.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="303.5" y="857.5">B.S. CHUMBOW HALL</text>
                                 </g>
-                                <g id="RESTROOMS" class="room-clickable">
+                                <g id="RESTROOMS" class="room-clickable hover-lift">
                                     <rect fill="#141313" height="241" width="166" x="0.5" y="449.5"></rect>
                                     <text dominant-baseline="central" fill="white" font-family="DejaVu Sans" font-size="21" font-weight="bold" text-anchor="middle" x="83.5" y="570.0">RESTROOMS</text>
                                 </g>
-                                <g id="CISCO_LAB" class="room-clickable">
+                                <g id="CISCO_LAB" class="room-clickable hover-lift">
                                     <rect fill="#FA1616" height="332" width="553" x="886.5" y="691.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="1163.0" y="857.5">CISCO LAB</text>
                                 </g>
-                                <g id="STAIRS_TO_FIRST_FLOOR" class="room-clickable">
+                                <g id="STAIRS_TO_FIRST_FLOOR" class="room-clickable hover-lift">
                                     <rect fill="black" fill-opacity="0.2" height="269" width="127" x="607.5" y="754.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="9" font-weight="bold" text-anchor="middle" x="682.5" y="889.0">STAIRS TO FIRST FLOOR</text>
                                 </g>
-                                <g id="STAIRS_TO_THIRD_FLOOR" class="room-clickable">
+                                <g id="STAIRS_TO_THIRD_FLOOR" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="269" stroke="#141313" width="127" x="758.5" y="754.5"></rect>
                                     <text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="8" font-weight="bold" text-anchor="middle" x="822.0" y="889.0">STAIRS TO THIRD FLOOR</text>
                                 </g>
@@ -182,39 +351,39 @@ class CampusNavigator {
                             <!-- First Floor -->
                             <g id="first-floor" class="floor-layer" style="display: none;">
                                 <rect fill="#F0F8FF" height="1024" width="1440"></rect>
-                                <g id="Marketing/PR_Department" class="room-clickable">
+                                <g id="Marketing/PR_Department" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="189" width="269" x="893.5" y="100.5"></rect>
                                     <text fill="black" font-size="14" text-anchor="middle" x="1028" y="198.0">Marketing/PR Department</text>
                                 </g>
-                                <g id="George_M_Mbarika,_Sr" class="room-clickable">
+                                <g id="George_M_Mbarika,_Sr" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="185" width="276" x="1163.5" y="100.5"></rect>
                                     <text fill="black" font-size="12" text-anchor="middle" x="1253" y="189.0">George M. Mbarika, Sr.</text>
                                 </g>
-                                <g id="Marketing/Admissions" class="room-clickable">
+                                <g id="Marketing/Admissions" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="193" width="379" x="893.5" y="286.5"></rect>
                                     <text fill="black" font-size="14" text-anchor="middle" x="1028" y="388.0">Marketing/Admissions</text>
                                 </g>
-                                <g id="Admissions" class="room-clickable">
+                                <g id="Admissions" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="193" width="166" x="1273.5" y="286.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" x="1356.5" y="375.0">Admissions</text>
                                 </g>
-                                <g id="Sick_Bay" class="room-clickable">
+                                <g id="Sick_Bay" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="379" width="584" x="0.5" y="100.5"></rect>
                                     <text fill="black" font-size="20" text-anchor="middle" x="292" y="298.0">Sick Bay</text>
                                 </g>
-                                <g id="Regina_M_Mbarika" class="room-clickable">
+                                <g id="Regina_M_Mbarika" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="463" width="546" x="893.5" y="660.5"></rect>
                                     <text fill="black" font-size="16" text-anchor="middle" x="1166" y="888.0">Regina M. Mbarika</text>
                                 </g>
-                                <g id="George_M_Mbarika,_Sr_Hall" class="room-clickable">
+                                <g id="George_M_Mbarika,_Sr_Hall" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="643" width="490" x="0.5" y="480.5"></rect>
                                     <text alignment-baseline="middle" fill="black" font-size="20" text-anchor="middle" x="245" y="802.0">George M. Mbarika, Sr. Hall</text>
                                 </g>
-                                <g id="Stairs" class="room-clickable">
+                                <g id="Stairs" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="379" stroke="#100F0F" width="140" x="587.5" y="100.5"></rect>
                                     <text fill="black" font-size="16" text-anchor="middle" x="650" y="286.0">Stairs</text>
                                 </g>
-                                <g id="Restrooms" class="room-clickable">
+                                <g id="Restrooms" class="room-clickable hover-lift">
                                     <rect fill="black" height="179" width="100" x="1339.5" y="480.5"></rect>
                                     <text dominant-baseline="middle" fill="white" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" x="1389.5" y="560.0">Restrooms</text>
                                 </g>
@@ -223,33 +392,33 @@ class CampusNavigator {
                             <!-- Basement -->
                             <g id="basement-floor" class="floor-layer" style="display: none;">
                                 <rect fill="#F5F5F5" height="1024" width="1440"></rect>
-                                <g id="Cantine" class="room-clickable">
+                                <g id="Cantine" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="480" stroke="#0B0A0A" width="716" x="0.5" y="543.5"></rect>
                                     <text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="358" y="776">Cantine</text>
                                 </g>
-                                <g id="Pondi_Hall" class="room-clickable">
+                                <g id="Pondi_Hall" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="542" stroke="#0B0A0A" width="365" x="0.5" y="0.5"></rect>
                                     <text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="183" y="261">Pondi Hall</text>
                                 </g>
-                                <g id="Lounge" class="room-clickable">
+                                <g id="Lounge" class="room-clickable hover-lift">
                                     <rect fill="#FF1515" height="1023" stroke="#0B0A0A" width="414" x="1025.5" y="0.5"></rect>
                                     <text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="1232" y="502">Lounge</text>
                                 </g>
-                                <g id="Basement_Stairs_up" class="room-clickable">
+                                <g id="Basement_Stairs_up" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="362" stroke="#0B0A0A" width="134" x="717.5" y="661.5"></rect>
                                     <text alignment-baseline="middle" fill="black" text-anchor="middle" x="784" y="838">
                                         <tspan dy="0" font-size="20" x="784">Basement</tspan>
                                         <tspan dy="20" font-size="20" x="784">Stairs up</tspan>
                                     </text>
                                 </g>
-                                <g id="Basement_Stairs_down" class="room-clickable">
+                                <g id="Basement_Stairs_down" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="362" stroke="#0B0A0A" width="153" x="871.5" y="661.5"></rect>
                                     <text alignment-baseline="middle" fill="black" text-anchor="middle" x="948" y="832">
                                         <tspan dy="0" font-size="20" x="948">Basement</tspan>
                                         <tspan dy="20" font-size="20" x="948">Stairs down</tspan>
                                     </text>
                                 </g>
-                                <g id="Basement" class="room-clickable">
+                                <g id="Basement" class="room-clickable hover-lift">
                                     <rect fill="white" height="161" stroke="black" width="357" x="513.5" y="188.5"></rect>
                                     <text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="692" y="259">Basement</text>
                                 </g>
@@ -258,47 +427,47 @@ class CampusNavigator {
                             <!-- Fourth Floor -->
                             <g id="fourth-floor" class="floor-layer" style="display: none;">
                                 <rect fill="white" height="1024" width="1440"></rect>
-                                <g id="VICE-CHANCELLORS_OFFICE" class="room-clickable">
+                                <g id="VICE-CHANCELLORS_OFFICE" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="393" stroke="black" width="266" x="0.5" y="0.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="10" y="30">VICE-CHANCELLOR'S OFFICE</text>
                                 </g>
-                                <g id="PA_TO_THE_VC" class="room-clickable">
+                                <g id="PA_TO_THE_VC" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="194" stroke="black" width="226" x="267.5" y="0.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="277" y="30">P.A. TO THE VC</text>
                                 </g>
-                                <g id="CONFERENCE_HALL" class="room-clickable">
+                                <g id="CONFERENCE_HALL" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="194" stroke="black" width="537" x="494.5" y="0.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="504" y="30">CONFERENCE HALL</text>
                                 </g>
-                                <g id="DIR_OF_MARKETING" class="room-clickable">
+                                <g id="DIR_OF_MARKETING" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="194" stroke="black" width="256" x="1032.5" y="0.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="1042" y="30">DIR. OF MARKETING</text>
                                 </g>
-                                <g id="DEPUTY_VICE-CHANCELLOR" class="room-clickable">
+                                <g id="DEPUTY_VICE-CHANCELLOR" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="393" stroke="black" width="150" x="1289.5" y="0.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="12" font-weight="bold" text-anchor="start" x="1299" y="30">DEPUTY VICE-CHANCELLOR</text>
                                 </g>
-                                <g id="ADMINISTRATIVE_ASSISTANT" class="room-clickable">
+                                <g id="ADMINISTRATIVE_ASSISTANT" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="198" stroke="black" width="226" x="267.5" y="195.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="277" y="225">ADMINISTRATIVE ASSISTANT</text>
                                 </g>
-                                <g id="FINANCE_OFFICE" class="room-clickable">
+                                <g id="FINANCE_OFFICE" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="193" stroke="black" width="230" x="889.5" y="642.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="899" y="654">FINANCE OFFICE</text>
                                 </g>
-                                <g id="BURSARY" class="room-clickable">
+                                <g id="BURSARY" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="187" stroke="black" width="230" x="889.5" y="836.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="899" y="866">BURSARY</text>
                                 </g>
-                                <g id="QUALITY_CONTROL" class="room-clickable">
+                                <g id="QUALITY_CONTROL" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="395" stroke="black" width="319" x="1120.5" y="628.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="1130" y="658">QUALITY CONTROL</text>
                                 </g>
-                                <g id="Stairs_Up" class="room-clickable">
+                                <g id="Stairs_Up" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="191.0" stroke="black" stroke-width="1" width="199.0" x="394.5" y="832.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="494.0" y="928.0">Stairs Up</text>
                                 </g>
-                                <g id="Stairs_Down" class="room-clickable">
+                                <g id="Stairs_Down" class="room-clickable hover-lift">
                                     <rect fill="#D9D9D9" height="256.0" stroke="black" stroke-width="1" width="129.0" x="594.5" y="767.5"></rect>
                                     <text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="659.0" y="895.5">Stairs Down</text>
                                 </g>
@@ -427,7 +596,7 @@ class CampusNavigator {
                         capacityText.setAttribute('font-weight', 'bold');
                         capacityText.setAttribute('stroke', 'black');
                         capacityText.setAttribute('stroke-width', '0.5');
-                        capacityText.textContent = `${roomInfo.capacity}`;
+                        capacityText.textContent = `👥${roomInfo.capacity}`;
                         room.appendChild(capacityText);
                     }
                 }
@@ -538,13 +707,19 @@ function showPage(pageId) {
     });
     
     // Show selected page
-    document.getElementById(pageId + '-page').classList.add('active');
+    const targetPage = document.getElementById(pageId + '-page');
+    targetPage.classList.add('active');
     
     // Update navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
-    event.target.classList.add('active');
+    
+    // Find the clicked nav link and make it active
+    const clickedLink = event?.target?.closest('.nav-link');
+    if (clickedLink) {
+        clickedLink.classList.add('active');
+    }
     
     // Update admin dashboard when switching to admin page
     if (pageId === 'admin') {
