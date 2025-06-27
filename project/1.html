@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Full Room Map Tool</title>
+<style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    #controls {
+      margin: 10px;
+    }
+    select {
+      padding: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    svg {
+      display: block;
+      margin: 20px auto;
+      border: 1px solid #aaa;
+    }
+    .highlighted {
+      stroke: #000;
+      stroke-width: 2;
+      fill: #00FF00 !important;
+    }
+    .hovered {
+      fill: orange !important;
+    }
+  
+#zoomWrapper {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #aaa;
+  margin: 20px auto;
+}
+#zoomSvg {
+  cursor: grab;
+}
+#zoomControls {
+  margin: 10px;
+}
+
+</style>
+</head>
+<body>
+<h2>Room Map Tool</h2>
+<div id="controls">
+<input id="roomSearch" onkeyup="filterRooms()" placeholder="Search rooms..." style="margin-bottom: 8px; padding: 5px; font-size: 16px; width: 240px;" type="text"/><select id="roomSelect" multiple="" size="6" style="width: 250px;"><option value="B.S._CHUMBOW_HALL">B.S._CHUMBOW_HALL</option><option value="CISCO_LAB">CISCO_LAB</option><option value="COMPUTER_LAB">COMPUTER_LAB</option><option value="Desktop - 1">Desktop - 1</option><option value="IT_HALL">IT_HALL</option><option value="RESTROOMS">RESTROOMS</option><option value="STAIRS_TO_FIRST_FLOOR">STAIRS_TO_FIRST_FLOOR</option><option value="STAIRS_TO_THIRD_FLOOR">STAIRS_TO_THIRD_FLOOR</option><option value="TERRY_&amp;_LINDA_BYRD_HALL">TERRY_&amp;_LINDA_BYRD_HALL</option><option value="Marketing/PR_Department">Marketing/PR Department</option><option value="George_M_Mbarika,_Sr">George M Mbarika, Sr</option><option value="Marketing/Admissions">Marketing/Admissions</option><option value="Admissions">Admissions</option><option value="Sick_Bay">Sick Bay</option><option value="Regina_M_Mbarika">Regina M Mbarika</option><option value="George_M_Mbarika,_Sr_Hall">George M Mbarika, Sr Hall</option><option value="Stairs">Stairs</option><option value="Stairs">Stairs</option><option value="Restrooms">Restrooms</option><option value="Cantine">Cantine</option><option value="Pondi_Hall">Pondi Hall</option><option value="Lounge">Lounge</option><option value="Basement_Stairs_up">Basement Stairs up</option><option value="Basement_Stairs_down">Basement Stairs down</option><option value="Basement">Basement</option><option value="VICE-CHANCELLORS_OFFICE">VICE-CHANCELLOR'S OFFICE</option><option value="PA_TO_THE_VC_ADMINISTRATIVE_ASSISTANT_TO_THE_VOS_OFFICE">P.A. TO THE VC ADMINISTRATIVE ASSISTANT TO THE VO'S OFFICE</option><option value="CONFERENCE_HALL_CENTRAL">CONFERENCE HALL CENTRAL</option><option value="DIR_OF_MARKETING">DIR. OF MARKETING</option><option value="DEPUTY_VICE-CHANCELLOR_IN_CHARGE_OF_ACADEMIC_AFFAIRS_AND_ADMINISTRATION">DEPUTY VICE-CHANCELLOR IN CHARGE OF ACADEMIC AFFAIRS AND ADMINISTRATION</option><option value="FOURTH_Floor">FOURTH Floor</option><option value="STORE-ROOM">STORE-ROOM</option><option value="TRANSCRIPT_OFFICE">TRANSCRIPT OFFICE</option><option value="PA_TO_THE_RECTOR_RECTOR">PA TO THE RECTOR RECTOR</option><option value="FINANCE_OFFICE">FINANCE OFFICE</option><option value="BURSARY">BURSARY</option><option value="QUALITY_CONTROL">QUALITY CONTROL</option><option value="PA_TO_THE_VC">P.A. TO THE VC</option><option value="ADMINISTRATIVE_ASSISTANT">ADMINISTRATIVE ASSISTANT</option><option value="CONFERENCE_HALL">CONFERENCE HALL</option><option value="DEPUTY_VICE-CHANCELLOR">DEPUTY VICE-CHANCELLOR</option><option value="Stairs_Up">Stairs Up</option><option value="Stairs_Down">Stairs Down</option><option value="Unnamed_Room_3">Unnamed Room 3</option><option value="Unnamed_Room_4">Unnamed Room 4</option></select>
+<br/>
+<button onclick="highlightSelected()">Highlight Selected</button>
+<button onclick="resetHighlights()">Reset</button>
+</div>
+<div id="svgContainer">
+<div id="zoomControls">
+<button onclick="zoom(1.2)">Zoom In</button>
+<button onclick="zoom(0.8)">Zoom Out</button>
+<button onclick="resetZoom()">Reset View</button>
+</div>
+<div id="zoomWrapper">
+<svg fill="none" height="1024" id="zoomSvg" viewbox="0 0 1440 1024" width="1440" xmlns="http://www.w3.org/2000/svg"><g id="Desktop - 1">
+<g clip-path="url(#clip0_33_22)">
+<rect fill="white" height="1024" width="1440"></rect>
+<g id="Rectangle 1">
+<rect fill="#D9D9D9" height="448" width="493" x="0.5" y="0.5"></rect>
+<rect fill="#FA1616" height="448" width="493" x="0.5" y="0.5"></rect>
+<rect height="448" stroke="#141313" width="493" x="0.5" y="0.5"></rect>
+</g>
+<g id="Rectangle 2">
+<rect fill="#D9D9D9" height="448" width="469" x="494.5" y="0.5"></rect>
+<rect fill="#FA1616" height="448" width="469" x="494.5" y="0.5"></rect>
+<rect height="448" stroke="#111010" width="469" x="494.5" y="0.5"></rect>
+</g>
+<g id="Rectangle 3">
+<rect fill="#D9D9D9" height="448" width="475" x="964.5" y="0.5"></rect>
+<rect fill="#FA1616" height="448" width="475" x="964.5" y="0.5"></rect>
+<rect height="448" stroke="#0F0E0E" width="475" x="964.5" y="0.5"></rect>
+</g>
+<g id="Rectangle 4">
+<rect fill="#D9D9D9" height="332" width="606" x="0.5" y="691.5"></rect>
+<rect fill="#FA1616" height="332" width="606" x="0.5" y="691.5"></rect>
+<rect fill="white" height="332" width="606" x="0.5" y="691.5"></rect>
+<rect fill="#FA1616" height="332" width="606" x="0.5" y="691.5"></rect>
+<rect height="332" stroke="#100F0F" width="606" x="0.5" y="691.5"></rect>
+</g>
+<g id="Rectangle 5">
+<rect fill="#D9D9D9" height="332" width="553" x="886.5" y="691.5"></rect>
+<rect fill="#FA1616" height="332" width="553" x="886.5" y="691.5"></rect>
+<rect height="332" stroke="#111111" width="553" x="886.5" y="691.5"></rect>
+</g>
+<g id="Rectangle 6">
+<rect fill="#D9D9D9" height="241" width="166" x="0.5" y="449.5"></rect>
+<rect fill="#141313" height="241" width="166" x="0.5" y="449.5"></rect>
+<rect height="241" stroke="#0F0E0E" width="166" x="0.5" y="449.5"></rect>
+</g>
+<g id="Rectangle 7">
+<rect fill="#D9D9D9" height="269" width="127" x="607.5" y="754.5"></rect>
+<rect fill="black" fill-opacity="0.2" height="269" width="127" x="607.5" y="754.5"></rect>
+<rect height="269" stroke="#111111" width="127" x="607.5" y="754.5"></rect>
+</g>
+<rect fill="#D9D9D9" height="269" id="Rectangle 8" stroke="#141313" width="127" x="758.5" y="754.5"></rect>
+<line id="Line 1" stroke="black" x1="609" x2="735" y1="981.5" y2="981.5"></line>
+<line id="Line 2" stroke="black" x1="607" x2="735" y1="940.5" y2="940.5"></line>
+<line id="Line 3" stroke="black" x1="605.012" x2="735.012" y1="885.5" y2="888.5"></line>
+<line id="Line 4" stroke="black" x1="609" x2="735" y1="836.5" y2="836.5"></line>
+<line id="Line 5" stroke="black" x1="606.992" x2="734.992" y1="788.5" y2="786.5"></line>
+<line id="Line 6" stroke="black" x1="759.008" x2="886.008" y1="979.5" y2="981.5"></line>
+<line id="Line 7" stroke="black" x1="758" x2="886" y1="940.5" y2="940.5"></line>
+<line id="Line 8" stroke="black" x1="758.988" x2="885.988" y1="888.5" y2="885.5"></line>
+<line id="Line 9" stroke="black" x1="761.004" x2="886.004" y1="835.5" y2="836.5"></line>
+<line id="Line 10" stroke="black" x1="758" x2="884" y1="788.5" y2="788.5"></line>
+</g>
+<rect height="1023" stroke="#111111" width="1439" x="0.5" y="0.5"></rect>
+</g>
+<defs>
+<clippath id="clip0_33_22">
+<rect fill="white" height="1024" width="1440"></rect>
+</clippath>
+</defs>
+<line stroke="black" stroke-width="3" x1="243.0" x2="243.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="251.0" x2="251.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="725.0" x2="725.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="733.0" x2="733.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="1198.0" x2="1198.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="1206.0" x2="1206.0" y1="449" y2="479"></line><line stroke="black" stroke-width="3" x1="299.5" x2="299.5" y1="1024" y2="1054"></line><line stroke="black" stroke-width="3" x1="307.5" x2="307.5" y1="1024" y2="1054"></line><line stroke="black" stroke-width="3" x1="1159.0" x2="1159.0" y1="1024" y2="1054"></line><line stroke="black" stroke-width="3" x1="1167.0" x2="1167.0" y1="1024" y2="1054"></line><line stroke="black" stroke-width="3" x1="79.5" x2="79.5" y1="691" y2="721"></line><line stroke="black" stroke-width="3" x1="87.5" x2="87.5" y1="691" y2="721"></line><line stroke="black" stroke-width="3" x1="0" x2="0" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="4" x2="4" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="886" x2="886" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="890" x2="890" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="561" x2="561" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="565" x2="565" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="167" x2="167" y1="570" y2="540"></line><line stroke="black" stroke-width="3" x1="171" x2="171" y1="570" y2="540"></line><line stroke="black" stroke-width="3" x1="1380" x2="1380" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="1384" x2="1384" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="167" x2="167" y1="570" y2="540"></line><line stroke="black" stroke-width="3" x1="171" x2="171" y1="570" y2="540"></line><line stroke="black" stroke-width="3" x1="1380" x2="1380" y1="691" y2="661"></line><line stroke="black" stroke-width="3" x1="1384" x2="1384" y1="691" y2="661"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="754.0" y2="754.0"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="799.0" y2="799.0"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="844.0" y2="844.0"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="889.0" y2="889.0"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="934.0" y2="934.0"></line><line stroke="black" stroke-width="2" x1="607" x2="758" y1="979.0" y2="979.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="754.0" y2="754.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="799.0" y2="799.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="844.0" y2="844.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="889.0" y2="889.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="934.0" y2="934.0"></line><line stroke="black" stroke-width="2" x1="758" x2="886" y1="979.0" y2="979.0"></line><g id="IT_HALL"><rect fill="#FF1515" height="448" width="493" x="0.5" y="0.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="247.0" y="224.5">IT HALL</text></g><g id="TERRY_&amp;_LINDA_BYRD_HALL"><rect fill="#FF1515" height="448" width="469" x="494.5" y="0.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="27" font-weight="bold" text-anchor="middle" x="729.0" y="224.5">TERRY &amp; LINDA BYRD HALL</text></g><g id="COMPUTER_LAB"><rect fill="#FF1515" height="448" width="475" x="964.5" y="0.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="1202.0" y="224.5">COMPUTER LAB</text></g><g id="B.S._CHUMBOW_HALL"><rect fill="#D9D9D9" height="269" width="127" x="607.5" y="754.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="303.5" y="857.5">B.S. CHUMBOW HALL</text></g><g id="RESTROOMS"><rect fill="#141313" height="241" width="166" x="0.5" y="449.5"></rect>
+<text dominant-baseline="central" fill="white" font-family="DejaVu Sans" font-size="21" font-weight="bold" text-anchor="middle" x="83.5" y="570.0">RESTROOMS</text></g><g id="CISCO_LAB"><rect fill="#FA1616" height="332" width="553" x="886.5" y="691.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="40" font-weight="bold" text-anchor="middle" x="1163.0" y="857.5">CISCO LAB</text></g><g id="STAIRS_TO_FIRST_FLOOR"><rect fill="black" fill-opacity="0.2" height="269" width="127" x="607.5" y="754.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="9" font-weight="bold" text-anchor="middle" x="682.5" y="889.0">STAIRS TO FIRST FLOOR</text></g><g id="STAIRS_TO_THIRD_FLOOR"><rect fill="#D9D9D9" height="269" id="Rectangle 8" stroke="#141313" width="127" x="758.5" y="754.5"></rect>
+<text dominant-baseline="central" fill="black" font-family="DejaVu Sans" font-size="8" font-weight="bold" text-anchor="middle" x="822.0" y="889.0">STAIRS TO THIRD FLOOR</text></g><g id="merged_text_floor"><g id="Marketing/PR_Department"><rect fill="#FF1515" height="189" width="269" x="893.5" y="1100.5"></rect><text fill="black" font-size="14" text-anchor="middle" x="1028" y="1198.0">Marketing/PR Department</text></g><g id="George_M_Mbarika,_Sr"><rect fill="#FF1515" height="185" width="276" x="1163.5" y="1100.5"></rect><text fill="black" font-size="12" text-anchor="middle" x="1253" y="1189.0">George M. Mbarika, Sr.</text></g><g id="Marketing/Admissions"><rect fill="#FF1515" height="193" width="379" x="893.5" y="1286.5"></rect><text fill="black" font-size="14" text-anchor="middle" x="1028" y="1388.0">Marketing/Admissions</text></g><g id="Admissions"><rect fill="#FF1515" height="193" width="166" x="1273.5" y="1286.5"></rect><rect fill="white" height="20" width="110" x="1301.5" y="1361.0"></rect><text dominant-baseline="middle" fill="black" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" x="1356.5" y="1375.0">Admissions</text></g><g id="Sick_Bay"><rect fill="#FF1515" height="379" width="584" x="0.5" y="1100.5"></rect><text fill="black" font-size="20" text-anchor="middle" x="292" y="1298.0">Sick Bay</text></g><g id="Regina_M_Mbarika"><rect fill="#FF1515" height="463" width="546" x="893.5" y="1660.5"></rect><text fill="black" font-size="16" text-anchor="middle" x="1166" y="1888.0">Regina M. Mbarika</text></g><g id="George_M_Mbarika,_Sr_Hall"><rect fill="#FF1515" height="643" width="490" x="0.5" y="1480.5"></rect><text alignment-baseline="middle" fill="black" font-size="20" text-anchor="middle" x="245" y="1802.0">George M. Mbarika, Sr. Hall</text></g><g id="Stairs"><rect fill="#D9D9D9" height="379" stroke="#100F0F" width="140" x="587.5" y="1100.5"></rect><text fill="black" font-size="16" text-anchor="middle" x="650" y="1286.0">Stairs</text></g><g id="Stairs"><rect fill="#D9D9D9" height="379" stroke="#111111" width="140" x="752.5" y="1100.5"></rect><text fill="black" font-size="16" text-anchor="middle" x="820" y="1286.0">Stairs</text></g><g id="Restrooms"><rect fill="black" height="179" width="100" x="1339.5" y="1480.5"></rect><text dominant-baseline="middle" fill="white" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" x="1389.5" y="1560.0">Restrooms</text></g><g id="FIRST_FLOOR"><rect fill="#D9D9D9" height="156" stroke="white" stroke-width="1" width="305" x="574" y="1676.0"></rect><text dominant-baseline="middle" fill="black" font-family="sans-serif" font-size="24" text-anchor="middle" x="726.5" y="1754.0">FIRST FLOOR</text></g></g><g id="door_strokes" transform="translate(0, 1100)"><line stroke="black" x1="585" x2="728" y1="306.5" y2="306.5"></line><line stroke="black" x1="585.007" x2="728.007" y1="245.5" y2="247.5"></line><line stroke="black" x1="585" x2="728" y1="185.5" y2="185.5"></line><line stroke="black" x1="587.007" x2="728.007" y1="116.5" y2="118.5"></line><line stroke="black" x1="585" x2="728" y1="42.5" y2="42.5"></line><line stroke="black" x1="754.007" x2="893.007" y1="304.5" y2="306.5"></line><line stroke="black" x1="754" x2="893" y1="245.5" y2="245.5"></line><line stroke="black" x1="752.014" x2="893.014" y1="185.5" y2="189.5"></line><line stroke="black" x1="754.01" x2="893.084" y1="118.5" y2="121.416"></line><line stroke="black" x1="754" x2="893" y1="42.5" y2="42.5"></line><line stroke="black" x1="671.5" x2="673.5" y1="1023.99" y2="953.986"></line><line stroke="black" x1="1125.5" x2="1117.5" y1="592.05" y2="512.05"></line><line stroke="black" x1="1162.5" x2="1160.5" y1="592.012" y2="512.013"></line><line stroke="black" x1="1206.5" x2="1206.5" y1="347" y2="429"></line><line stroke="black" x1="1239.5" x2="1241.5" y1="346.988" y2="430.988"></line><line stroke="black" x1="1326.17" x2="1254.83" y1="252.086" y2="251.914"></line><line stroke="black" x1="1326" x2="1255" y1="283.5" y2="283.5"></line><line stroke="black" x1="529.499" x2="533.5" y1="342.977" y2="430.977"></line><line stroke="black" x1="564.5" x2="564.5" y1="345" y2="429"></line><line stroke="black" x1="1208.5" x2="1206.5" y1="153.014" y2="223.014"></line><line stroke="black" x1="1237.5" x2="1239.5" y1="154.985" y2="222.985"></line><line stroke="black" x1="1358.02" x2="1298.02" y1="454.5" y2="456.5"></line><line stroke="#7C7676" stroke-opacity="0.2" x1="1358.02" x2="1298.02" y1="454.5" y2="456.5"></line><line stroke="black" x1="1366" x2="1302" y1="484.5" y2="484.5"></line><line stroke="white" x1="1006.5" x2="1010.5" y1="158.969" y2="222.969"></line><line stroke="black" x1="1006.5" x2="1010.5" y1="158.969" y2="222.969"></line><line stroke="white" x1="1038.5" x2="1044.5" y1="158.953" y2="222.953"></line><line stroke="#0F0E0E" x1="1038.5" x2="1044.5" y1="158.953" y2="222.953"></line><line stroke="white" x1="448.009" x2="564.009" y1="627.5" y2="629.5"></line><line stroke="black" x1="448.009" x2="564.009" y1="627.5" y2="629.5"></line><line stroke="white" x1="447.991" x2="563.991" y1="682.5" y2="680.5"></line><line stroke="black" x1="447.991" x2="563.991" y1="682.5" y2="680.5"></line><line stroke="black" x1="719.5" x2="719.5" y1="1024" y2="945"></line></g><g id="BASEMENT_MAP" transform="translate(0, 2000)">
+<rect fill="#F5F5F5" height="1024" width="1440"></rect>
+<g id="Desktop - 1">
+<g clip-path="url(#clip0_51_2)">
+<rect fill="white" height="1024" width="1440"></rect>
+<g filter="url(#filter0_d_51_2)" id="Rectangle 1">
+<rect fill="#D9D9D9" height="481" width="717" y="543"></rect>
+<rect fill="#FF1515" height="480" id="Cantine" stroke="#0B0A0A" width="716" x="0.5" y="543.5"></rect>
+</g>
+<rect fill="#FF1515" height="542" id="Pondi_Hall" stroke="#0B0A0A" width="365" x="0.5" y="0.5"></rect>
+<g id="Rectangle 3">
+<rect fill="#FF1515" height="1023" id="Lounge" width="414" x="1025.5" y="0.5"></rect>
+<rect fill="#FF1515" height="1023" id="Lounge" stroke="#0B0A0A" width="414" x="1025.5" y="0.5"></rect>
+<rect fill="#FF1515" height="1023" id="Lounge" stroke="#0B0A0A" width="414" x="1025.5" y="0.5"></rect>
+</g>
+<rect fill="#D9D9D9" height="362" id="Basement_Stairs_up" stroke="#0B0A0A" width="134" x="717.5" y="661.5"></rect>
+<rect fill="#D9D9D9" height="362" id="Basement_Stairs_down" stroke="#0B0A0A" width="153" x="871.5" y="661.5"></rect>
+<g id="Rectangle 6">
+<rect fill="#D9D9D9" height="161" id="Basement" width="357" x="513.5" y="188.5"></rect>
+<rect fill="white" height="161" id="Basement" width="357" x="513.5" y="188.5"></rect>
+<rect height="161" id="Basement" stroke="black" width="357" x="513.5" y="188.5"></rect>
+<rect height="161" id="Basement" stroke="black" stroke-opacity="0.2" width="357" x="513.5" y="188.5"></rect>
+<rect height="161" id="Basement" stroke="black" stroke-opacity="0.2" width="357" x="513.5" y="188.5"></rect>
+<rect height="161" id="Basement" stroke="white" width="357" x="513.5" y="188.5"></rect>
+</g>
+</g>
+<rect height="1023" id="Basement" stroke="#0B0A0A" width="1439" x="0.5" y="0.5"></rect>
+</g>
+<defs>
+<filter color-interpolation-filters="sRGB" filterunits="userSpaceOnUse" height="489" id="filter0_d_51_2" width="725" x="-4" y="543">
+<feflood flood-opacity="0" result="BackgroundImageFix"></feflood>
+<fecolormatrix in="SourceAlpha" result="hardAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></fecolormatrix>
+<feoffset dy="4"></feoffset>
+<fegaussianblur stddeviation="2"></fegaussianblur>
+<fecomposite in2="hardAlpha" operator="out"></fecomposite>
+<fecolormatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"></fecolormatrix>
+<feblend in2="BackgroundImageFix" mode="normal" result="effect1_dropShadow_51_2"></feblend>
+<feblend in="SourceGraphic" in2="effect1_dropShadow_51_2" mode="normal" result="shape"></feblend>
+</filter>
+<clippath id="clip0_51_2">
+<rect fill="white" height="1024" width="1440"></rect>
+</clippath>
+</defs>
+<text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="183" y="261">Pondi Hall</text><text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="358" y="776">Cantine</text><text alignment-baseline="middle" fill="black" text-anchor="middle" x="784" y="838"><tspan dy="0" font-size="20" x="784">Basement</tspan><tspan dy="20" font-size="20" x="784">Stairs up</tspan></text><text alignment-baseline="middle" fill="black" text-anchor="middle" x="948" y="832"><tspan dy="0" font-size="20" x="948">Basement</tspan><tspan dy="20" font-size="20" x="948">Stairs down</tspan></text><text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="1232" y="502">Lounge</text><text alignment-baseline="middle" fill="black" font-size="40" text-anchor="middle" x="692" y="259">Basement</text></g><g transform="translate(0, 3000)"><g clip-path="url(#clip0_60_10)" id="Desktop - 1">
+<g id="Rectangle 19">
+</g>
+</g><g id="VICE-CHANCELLORS_OFFICE"><rect fill="white" height="1024" id="VICE-CHANCELLOR'S OFFICE" width="1440"></rect><rect fill="#D9D9D9" height="393" id="VICE-CHANCELLOR'S OFFICE" stroke="black" width="266" x="0.5" y="0.5"></rect><line stroke="black" stroke-width="2" x1="106.9" x2="106.9" y1="393.5" y2="423.5"></line><line stroke="black" stroke-width="2" x1="160.1" x2="160.1" y1="393.5" y2="423.5"></line></g><g id="PA_TO_THE_VC_ADMINISTRATIVE_ASSISTANT_TO_THE_VOS_OFFICE"></g><g id="CONFERENCE_HALL_CENTRAL"></g><g id="DIR_OF_MARKETING"><rect fill="#D9D9D9" height="194" id="DIR. OF MARKETING" stroke="black" width="256" x="1032.5" y="0.5"></rect><line stroke="black" stroke-width="2" x1="1134.9" x2="1134.9" y1="194.5" y2="224.5"></line><line stroke="black" stroke-width="2" x1="1186.1" x2="1186.1" y1="194.5" y2="224.5"></line></g><g id="DEPUTY_VICE-CHANCELLOR_IN_CHARGE_OF_ACADEMIC_AFFAIRS_AND_ADMINISTRATION"></g><g id="RESTROOMS"><rect fill="#D9D9D9" height="235" id="RESTROOMS" stroke="black" width="162" x="0.5" y="394.5"></rect><line stroke="black" stroke-width="2" x1="65.3" x2="65.3" y1="629.5" y2="659.5"></line><line stroke="black" stroke-width="2" x1="97.7" x2="97.7" y1="629.5" y2="659.5"></line></g><g id="FOURTH_Floor"><rect fill="#D9D9D9" height="124" id="FOURTH Floor" width="300" x="613" y="450"></rect><rect fill="white" height="124" id="FOURTH Floor" width="300" x="613" y="450"></rect><line stroke="black" stroke-width="2" x1="733.0" x2="733.0" y1="574.0" y2="604.0"></line><line stroke="black" stroke-width="2" x1="793.0" x2="793.0" y1="574.0" y2="604.0"></line><line stroke="black" stroke-width="2" x1="733.0" x2="733.0" y1="574.0" y2="604.0"></line><line stroke="black" stroke-width="2" x1="793.0" x2="793.0" y1="574.0" y2="604.0"></line></g><g id="STORE-ROOM"><rect fill="#D9D9D9" height="203" id="STORE-ROOM" stroke="black" width="266" x="0.5" y="628.5"></rect><line stroke="black" stroke-width="2" x1="106.9" x2="106.9" y1="831.5" y2="861.5"></line><line stroke="black" stroke-width="2" x1="160.1" x2="160.1" y1="831.5" y2="861.5"></line></g><g id="TRANSCRIPT_OFFICE"><rect fill="#D9D9D9" height="191" id="TRANSCRIPT OFFICE" stroke="black" width="266" x="0.5" y="832.5"></rect><line stroke="black" stroke-width="2" x1="106.9" x2="106.9" y1="1023.5" y2="1053.5"></line><line stroke="black" stroke-width="2" x1="160.1" x2="160.1" y1="1023.5" y2="1053.5"></line></g><g id="PA_TO_THE_RECTOR_RECTOR"><rect fill="#D9D9D9" height="189" id="PA TO THE RECTOR RECTOR" stroke="black" width="199" x="394.5" y="642.5"></rect><line stroke="black" stroke-width="2" x1="474.1" x2="474.1" y1="831.5" y2="861.5"></line><line stroke="black" stroke-width="2" x1="513.9" x2="513.9" y1="831.5" y2="861.5"></line></g><g id="FINANCE_OFFICE"><rect fill="#D9D9D9" height="193" id="FINANCE OFFICE" stroke="black" width="230" x="889.5" y="642.5"></rect><line stroke="black" stroke-width="2" x1="981.5" x2="981.5" y1="835.5" y2="865.5"></line><line stroke="black" stroke-width="2" x1="1027.5" x2="1027.5" y1="835.5" y2="865.5"></line></g><g id="BURSARY"><rect fill="#D9D9D9" height="187" id="BURSARY" stroke="black" width="230" x="889.5" y="836.5"></rect><line stroke="black" stroke-width="2" x1="981.5" x2="981.5" y1="1023.5" y2="1053.5"></line><line stroke="black" stroke-width="2" x1="1027.5" x2="1027.5" y1="1023.5" y2="1053.5"></line></g><g id="QUALITY_CONTROL"><rect fill="#D9D9D9" height="395" id="QUALITY CONTROL" stroke="black" width="319" x="1120.5" y="628.5"></rect><line stroke="black" stroke-width="2" x1="1248.1" x2="1248.1" y1="1023.5" y2="1053.5"></line><line stroke="black" stroke-width="2" x1="1311.9" x2="1311.9" y1="1023.5" y2="1053.5"></line></g><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="10" y="30">VICE-CHANCELLOR'S OFFICE</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="277" y="30">P.A. TO THE VC ADMINISTRATIVE ASSISTANT TO THE VO'S OFFICE</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="504" y="30">CONFERENCE HALL CENTRAL</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="1042" y="30">DIR. OF MARKETING</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="1299" y="30">DEPUTY VICE-CHANCELLOR IN CHARGE OF ACADEMIC AFFAIRS AND ADMINISTRATION</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="10" y="424">RESTROOMS</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="623" y="480">FOURTH Floor</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="10" y="658">STORE-ROOM</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="10" y="862">TRANSCRIPT OFFICE</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="404" y="672">PA TO THE RECTOR RECTOR</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="899" y="654">FINANCE OFFICE</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="899" y="866">BURSARY</text><text dominant-baseline="middle" fill="black" font-size="14" font-weight="bold" text-anchor="start" x="1130" y="658">QUALITY CONTROL</text><g id="PA_TO_THE_VC"><rect fill="#D9D9D9" height="194" id="P.A. TO THE VC" stroke="black" width="226" x="267.5" y="0.5"></rect><line stroke="black" stroke-width="2" x1="357.9" x2="357.9" y1="194.5" y2="224.5"></line><line stroke="black" stroke-width="2" x1="403.1" x2="403.1" y1="194.5" y2="224.5"></line></g><g id="ADMINISTRATIVE_ASSISTANT"><rect fill="#D9D9D9" height="198" id="ADMINISTRATIVE ASSISTANT" stroke="black" width="226" x="267.5" y="195.5"></rect><line stroke="black" stroke-width="2" x1="357.9" x2="357.9" y1="393.5" y2="423.5"></line><line stroke="black" stroke-width="2" x1="403.1" x2="403.1" y1="393.5" y2="423.5"></line></g><g id="CONFERENCE_HALL"><rect fill="#D9D9D9" height="194" id="CONFERENCE HALL" stroke="black" width="537" x="494.5" y="0.5"></rect><line stroke="black" stroke-width="2" x1="709.3" x2="709.3" y1="194.5" y2="224.5"></line><line stroke="black" stroke-width="2" x1="816.7" x2="816.7" y1="194.5" y2="224.5"></line></g><g id="DEPUTY_VICE-CHANCELLOR"><rect fill="#D9D9D9" height="393" id="DEPUTY VICE-CHANCELLOR" stroke="black" width="150" x="1289.5" y="0.5"></rect><line stroke="black" stroke-width="2" x1="1349.5" x2="1349.5" y1="393.5" y2="423.5"></line><line stroke="black" stroke-width="2" x1="1379.5" x2="1379.5" y1="393.5" y2="423.5"></line></g><g id="Stairs_Up"><rect data-original-fill="#D9D9D9" fill="#D9D9D9" height="191.0" stroke="black" stroke-width="1" width="199.0" x="394.5" y="832.5"></rect><text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="494.0" y="928.0">Stairs Up</text></g><g id="Stairs_Down"><rect data-original-fill="#D9D9D9" fill="#D9D9D9" height="256.0" stroke="black" stroke-width="1" width="129.0" x="594.5" y="767.5"></rect><text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="659.0" y="895.5">Stairs Down</text></g><g id="Unnamed_Room_3"><rect data-original-fill="#D9D9D9" fill="#D9D9D9" height="256.0" stroke="black" stroke-width="1" width="138.0" x="750.5" y="767.5"></rect><text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="819.5" y="895.5">Unnamed Room 3</text></g><g id="Unnamed_Room_4"><rect data-original-fill="#D9D9D9" fill="#D9D9D9" height="198.0" stroke="black" stroke-width="1" width="256.0" x="1032.5" y="195.5"></rect><text dominant-baseline="middle" fill="black" font-size="16" font-weight="bold" text-anchor="middle" x="1160.5" y="294.5">Unnamed Room 4</text></g></g></svg></div>
+</div>
+<script>
+function highlightSelected() {
+  const selected = Array.from(document.getElementById('roomSelect').selectedOptions).map(opt => opt.value);
+
+  document.querySelectorAll('g').forEach(g => {
+    g.classList.remove('highlighted');
+    g.querySelectorAll('rect').forEach(r => {
+      r.removeAttribute('data-original-fill');
+      r.style.fill = '';
+    });
+  });
+
+  selected.forEach(id => {
+    const group = document.getElementById(id);
+    if (group) {
+      group.classList.add('highlighted');
+      group.querySelectorAll('rect').forEach(r => {
+        if (!r.hasAttribute('data-original-fill')) {
+          r.setAttribute('data-original-fill', r.getAttribute('fill') || 'none');
+        }
+        r.style.fill = '#00FF00';
+      });
+    }
+  });
+}
+
+function resetHighlights() {
+  document.querySelectorAll('g').forEach(g => {
+    g.classList.remove('highlighted');
+    g.classList.remove('hovered');
+    g.querySelectorAll('rect').forEach(r => {
+      const original = r.getAttribute('data-original-fill');
+      if (original) {
+        r.style.fill = original;
+        r.removeAttribute('data-original-fill');
+      }
+    });
+  });
+  document.getElementById('roomSelect').selectedIndex = -1;
+}
+
+// Add hover interactivity
+document.querySelectorAll('g').forEach(g => {
+  g.addEventListener('mouseenter', () => {
+    g.classList.add('hovered');
+  });
+  g.addEventListener('mouseleave', () => {
+    g.classList.remove('hovered');
+  });
+  g.addEventListener('click', () => {
+    const select = document.getElementById('roomSelect');
+    for (let i = 0; i < select.options.length; i++) {
+      if (select.options[i].value === g.id) {
+        select.options[i].selected = true;
+        highlightSelected();
+        break;
+      }
+    }
+  });
+});
+</script>
+<script>
+  const svg = document.getElementById("zoomSvg");
+  let viewBox = { x: 0, y: 0, width: 1440, height: 1024 };
+
+  function updateViewBox() {
+    svg.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+  }
+
+  function zoom(factor) {
+    viewBox.width /= factor;
+    viewBox.height /= factor;
+    updateViewBox();
+  }
+
+  function resetZoom() {
+    viewBox = { x: 0, y: 0, width: 1440, height: 1024 };
+    updateViewBox();
+  }
+
+  let isPanning = false;
+  let startPoint = { x: 0, y: 0 };
+
+  svg.addEventListener("mousedown", (e) => {
+    isPanning = true;
+    startPoint = { x: e.clientX, y: e.clientY };
+    svg.style.cursor = "grabbing";
+  });
+
+  svg.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    const dx = (e.clientX - startPoint.x) * (viewBox.width / svg.clientWidth);
+    const dy = (e.clientY - startPoint.y) * (viewBox.height / svg.clientHeight);
+    viewBox.x -= dx;
+    viewBox.y -= dy;
+    startPoint = { x: e.clientX, y: e.clientY };
+    updateViewBox();
+  });
+
+  svg.addEventListener("mouseup", () => {
+    isPanning = false;
+    svg.style.cursor = "grab";
+  });
+
+  svg.addEventListener("mouseleave", () => {
+    isPanning = false;
+    svg.style.cursor = "grab";
+  });
+
+  updateViewBox();
+</script>
+<script>
+function filterRooms() {
+  const input = document.getElementById("roomSearch").value.toLowerCase();
+  const select = document.getElementById("roomSelect");
+  for (let i = 0; i < select.options.length; i++) {
+    const option = select.options[i];
+    const txt = option.text.toLowerCase();
+    option.style.display = txt.includes(input) ? "" : "none";
+  }
+}
+</script></body>
+</html>

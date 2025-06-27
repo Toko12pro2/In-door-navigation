@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Room Navigator</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/roomComponents.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>Campus Navigator</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" onclick="showPage('home')" class="nav-link active">Home</a></li>
+                <li><a href="#" onclick="showPage('map')" class="nav-link">Room Map</a></li>
+                <li><a href="#" onclick="showPage('admin')" class="nav-link">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Welcome to Campus Room Navigator</h1>
+                    <p>Your comprehensive guide to finding and navigating campus rooms with detailed capacity information and interactive features</p>
+                    <button class="cta-button" onclick="showPage('map')">Explore Room Map</button>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="container">
+                    <h2>Application Features</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🗺️</div>
+                            <h3>Multi-Floor Interactive Map</h3>
+                            <p>Navigate through detailed floor plans across multiple levels with interactive room highlighting and search functionality</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👥</div>
+                            <h3>Room Capacity Information</h3>
+                            <p>View detailed room information including capacity, type, amenities, and descriptions for better planning</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔍</div>
+                            <h3>Smart Search & Filter</h3>
+                            <p>Quickly find specific rooms, halls, or facilities using our intelligent search system with type filtering</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🎯</div>
+                            <h3>Room Highlighting</h3>
+                            <p>Select and highlight multiple rooms simultaneously with detailed information panels</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔧</div>
+                            <h3>Zoom & Pan Controls</h3>
+                            <p>Detailed view controls with zoom in/out and pan functionality for precise navigation</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚙️</div>
+                            <h3>Admin Management</h3>
+                            <p>Comprehensive admin dashboard for managing room data, tracking usage, and analytics</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="instructions">
+                <div class="container">
+                    <h2>How to Use</h2>
+                    <div class="instruction-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Access the Room Map</h3>
+                                <p>Click on "Room Map" in the navigation or use the "Explore Room Map" button above</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Select Floor & Search</h3>
+                                <p>Choose your desired floor and use the search box to filter rooms by name or select from the dropdown list</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>View Room Information</h3>
+                                <p>Click on any room to see detailed information including capacity, amenities, and descriptions</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Navigate & Highlight</h3>
+                                <p>Use zoom controls for detailed views, highlight multiple rooms, and display capacity information</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Map Page -->
+        <div id="map-page" class="page">
+            <div class="map-container">
+                <div id="map-content">
+                    <!-- Map content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Page -->
+        <div id="admin-page" class="page">
+            <div class="admin-container">
+                <div class="admin-header">
+                    <h2>Admin Dashboard</h2>
+                    <div class="admin-controls">
+                        <button onclick="clearActivityLog()" class="btn-danger">Clear Log</button>
+                        <button onclick="exportActivityLog()" class="btn-secondary">Export Data</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Page Views</h3>
+                        <div class="stat-number" id="total-views">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Map Interactions</h3>
+                        <div class="stat-number" id="map-interactions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Room Searches</h3>
+                        <div class="stat-number" id="room-searches">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Sessions Today</h3>
+                        <div class="stat-number" id="active-sessions">0</div>
+                    </div>
+                </div>
+
+                <!-- Room Management Section will be inserted here by adminRoomManager.js -->
+
+                <div class="activity-section">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-log" id="activity-log">
+                        <!-- Activity entries will be populated here -->
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <h3>Usage Analytics</h3>
+                    <div class="chart-container">
+                        <canvas id="usage-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Campus Room Navigator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/analytics.js"></script>
+    <script src="js/roomData.js"></script>
+    <script src="js/roomInfoPanel.js"></script>
+    <script src="js/adminRoomManager.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
