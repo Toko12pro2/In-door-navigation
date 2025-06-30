@@ -14,20 +14,20 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="public/image.png" alt="ICT University Logo" class="logo-img">
+                <img src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="ICT University Logo" class="logo-img">
                 <div class="brand-text">
                     <h1>ICT University</h1>
                     <span class="brand-subtitle">Campus Navigator</span>
                 </div>
             </div>
             <ul class="nav-menu">
-                <li><a href="#" onclick="showPage('home')" class="nav-link active">
+                <li><a href="#" onclick="app.showPage('home')" class="nav-link active">
                     <span class="nav-icon">🏠</span>Home
                 </a></li>
-                <li><a href="#" onclick="showPage('map')" class="nav-link">
+                <li><a href="#" onclick="app.showPage('map')" class="nav-link">
                     <span class="nav-icon">🗺️</span>Room Map
                 </a></li>
-                <li><a href="#" onclick="showPage('admin')" class="nav-link" id="admin-nav-link">
+                <li><a href="#" onclick="app.showPage('admin')" class="nav-link" id="admin-nav-link">
                     <span class="nav-icon">⚙️</span>Admin
                 </a></li>
             </ul>
@@ -51,7 +51,7 @@
                     </div>
                     <h1 class="fade-in-up">Welcome to ICT University Campus Navigator</h1>
                     <p class="fade-in-up delay-1">Your comprehensive guide to finding and navigating campus rooms with detailed capacity information and interactive features</p>
-                    <button class="cta-button fade-in-up delay-2" onclick="showPage('map')">
+                    <button class="cta-button fade-in-up delay-2" onclick="app.showPage('map')">
                         <span class="button-icon">🚀</span>
                         Explore Room Map
                     </button>
@@ -201,7 +201,7 @@
             <div class="modal-content admin-login-modal">
                 <div class="modal-header">
                     <h3>🔐 Admin Access Required</h3>
-                    <button class="close-modal" onclick="closeAdminLogin()">&times;</button>
+                    <button class="close-modal" onclick="app.closeAdminLogin()">&times;</button>
                 </div>
                 <div class="admin-login-form">
                     <div class="login-animation">
@@ -215,12 +215,12 @@
                         </lottie-player>
                     </div>
                     <p>Please enter the admin password to access the dashboard:</p>
-                    <form onsubmit="validateAdminLogin(event)">
+                    <form onsubmit="app.validateAdminLogin(event)">
                         <div class="form-group">
                             <input type="password" id="admin-password" placeholder="Enter admin password" required>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="closeAdminLogin()">Cancel</button>
+                            <button type="button" class="btn-secondary" onclick="app.closeAdminLogin()">Cancel</button>
                             <button type="submit" class="btn-primary">Access Dashboard</button>
                         </div>
                     </form>
@@ -247,13 +247,13 @@
                         <h2>Admin Dashboard</h2>
                     </div>
                     <div class="admin-controls">
-                        <button onclick="clearActivityLog()" class="btn-danger">
+                        <button onclick="app.adminDashboard.clearActivityLog()" class="btn-danger">
                             <span class="button-icon">🗑️</span>Clear Log
                         </button>
-                        <button onclick="exportActivityLog()" class="btn-secondary">
+                        <button onclick="app.adminDashboard.exportActivityLog()" class="btn-secondary">
                             <span class="button-icon">📊</span>Export Data
                         </button>
-                        <button onclick="logoutAdmin()" class="btn-logout">
+                        <button onclick="app.logoutAdmin()" class="btn-logout">
                             <span class="button-icon">🚪</span>Logout
                         </button>
                     </div>
@@ -318,7 +318,8 @@
                     </div>
                 </div>
 
-                <!-- Room Management Section will be inserted here by adminRoomManager.js -->
+                <!-- Room Management Section will be inserted here -->
+                <div id="room-management-container"></div>
 
                 <div class="activity-section slide-in-up">
                     <h3>📊 Recent Activity</h3>
@@ -340,17 +341,27 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <img src="public/image.png" alt="ICT University Logo" class="footer-logo">
+                <img src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop" alt="ICT University Logo" class="footer-logo">
                 <p>&copy; 2025 ICT University - Campus Room Navigator. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="js/analytics.js"></script>
-    <script src="js/roomData.js"></script>
-    <script src="js/roomInfoPanel.js"></script>
-    <script src="js/adminRoomManager.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Core Application Scripts -->
+    <script src="js/core/Analytics.js"></script>
+    <script src="js/core/RoomDataManager.js"></script>
+    <script src="js/core/MapRenderer.js"></script>
+    <script src="js/components/RoomInfoPanel.js"></script>
+    <script src="js/components/AdminDashboard.js"></script>
+    <script src="js/components/AdminRoomManager.js"></script>
+    <script src="js/CampusNavigatorApp.js"></script>
+    
+    <script>
+        // Initialize the application
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new CampusNavigatorApp();
+        });
+    </script>
 </body>
 </html>

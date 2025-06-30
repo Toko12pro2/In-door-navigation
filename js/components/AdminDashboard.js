@@ -1,12 +1,11 @@
 // Admin dashboard functionality
 class AdminDashboard {
-    constructor() {
-        this.analytics = window.campusNavigator?.analytics || new Analytics();
+    constructor(analytics) {
+        this.analytics = analytics;
         this.init();
     }
 
     init() {
-        this.setupEventListeners();
         this.updateDashboard();
         
         // Auto-refresh dashboard every 30 seconds
@@ -15,23 +14,6 @@ class AdminDashboard {
                 this.updateDashboard();
             }
         }, 30000);
-    }
-
-    setupEventListeners() {
-        // Clear log button
-        window.clearActivityLog = () => {
-            if (confirm('Are you sure you want to clear all activity data? This action cannot be undone.')) {
-                this.analytics.clearData();
-                this.updateDashboard();
-                this.showNotification('Activity log cleared successfully', 'success');
-            }
-        };
-
-        // Export data button
-        window.exportActivityLog = () => {
-            this.analytics.exportData();
-            this.showNotification('Analytics data exported successfully', 'success');
-        };
     }
 
     updateDashboard() {
@@ -173,57 +155,20 @@ class AdminDashboard {
         ctx.fillText('Daily Activity (Last 7 Days)', canvas.width / 2, 20);
     }
 
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        // Style the notification
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            padding: '15px 20px',
-            borderRadius: '5px',
-            color: 'white',
-            fontWeight: 'bold',
-            zIndex: '10000',
-            opacity: '0',
-            transform: 'translateX(100%)',
-            transition: 'all 0.3s ease'
-        });
+    clearActivityLog() {
+        if (confirm('Are you sure you want to clear all activity data? This action cannot be undone.')) {
+            this.analytics.clearData();
+            this.updateDashboard();
+            if (window.app) {
+                window.app.showNotification('Activity log cleared successfully', 'success');
+            }
+        }
+    }
 
-        // Set background color based on type
-        const colors = {
-            success: '#28a745',
-            error: '#dc3545',
-            warning: '#ffc107',
-            info: '#17a2b8'
-        };
-        notification.style.backgroundColor = colors[type] || colors.info;
-
-        // Add to page
-        document.body.appendChild(notification);
-
-        // Animate in
-        setTimeout(() => {
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateX(0)';
-        }, 10);
-
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
+    exportActivityLog() {
+        this.analytics.exportData();
+        if (window.app) {
+            window.app.showNotification('Analytics data exported successfully', 'success');
+        }
     }
 }
-
-// Initialize admin dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.adminDashboard = new AdminDashboard();
-});

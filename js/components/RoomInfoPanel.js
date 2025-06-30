@@ -1,6 +1,8 @@
 // Room information panel component
 class RoomInfoPanel {
-    constructor() {
+    constructor(roomDataManager, analytics) {
+        this.roomDataManager = roomDataManager;
+        this.analytics = analytics;
         this.currentRoom = null;
         this.isVisible = false;
         this.createPanel();
@@ -87,18 +89,18 @@ class RoomInfoPanel {
     }
 
     show(roomId, position = null) {
-        const roomInfo = window.roomDataManager.getRoomInfo(roomId);
+        const roomInfo = this.roomDataManager.getRoomInfo(roomId);
         this.currentRoom = roomId;
         this.isVisible = true;
 
-        // Update panel content with enhanced styling
+        // Update panel content
         document.getElementById('room-title').innerHTML = `🏢 ${roomInfo.name}`;
         document.getElementById('room-capacity').innerHTML = `👥 ${roomInfo.capacity} people`;
         document.getElementById('room-type').innerHTML = `🏷️ ${roomInfo.type}`;
         document.getElementById('room-floor').innerHTML = `🏢 ${roomInfo.floor}`;
         document.getElementById('room-description').textContent = roomInfo.description;
 
-        // Update amenities with enhanced styling
+        // Update amenities
         const amenitiesContainer = document.getElementById('room-amenities');
         amenitiesContainer.innerHTML = '';
         
@@ -153,7 +155,7 @@ class RoomInfoPanel {
             });
         }
 
-        // Show and position panel with animation
+        // Show and position panel
         const panel = document.getElementById('room-info-panel');
         panel.classList.remove('hiding');
         panel.classList.add('visible');
@@ -164,11 +166,9 @@ class RoomInfoPanel {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             
-            // Calculate optimal position
             let left = Math.min(position.x + 10, viewportWidth - panelWidth - 20);
             let top = Math.min(position.y - panelHeight/2, viewportHeight - panelHeight - 20);
             
-            // Ensure panel stays within viewport
             left = Math.max(20, left);
             top = Math.max(20, top);
             
@@ -177,7 +177,6 @@ class RoomInfoPanel {
             panel.style.right = 'auto';
             panel.style.transform = 'none';
         } else {
-            // Default position
             panel.style.right = '20px';
             panel.style.top = '50%';
             panel.style.left = 'auto';
@@ -185,9 +184,7 @@ class RoomInfoPanel {
         }
 
         // Track analytics
-        if (window.campusNavigator?.analytics) {
-            window.campusNavigator.analytics.trackEvent('room_info_view', `Viewed info for ${roomInfo.name}`, { roomId });
-        }
+        this.analytics.trackEvent('room_info_view', `Viewed info for ${roomInfo.name}`, { roomId });
     }
 
     hide() {
@@ -195,11 +192,9 @@ class RoomInfoPanel {
         this.currentRoom = null;
         const panel = document.getElementById('room-info-panel');
         
-        // Add hiding animation
         panel.classList.remove('visible');
         panel.classList.add('hiding');
         
-        // Reset position after animation
         setTimeout(() => {
             panel.style.right = '-350px';
             panel.style.left = 'auto';
@@ -212,12 +207,10 @@ class RoomInfoPanel {
     highlightRoom(roomId) {
         const select = document.getElementById('roomSelect');
         if (select) {
-            // Clear previous selections
             for (let i = 0; i < select.options.length; i++) {
                 select.options[i].selected = false;
             }
             
-            // Select the current room
             for (let i = 0; i < select.options.length; i++) {
                 if (select.options[i].value === roomId) {
                     select.options[i].selected = true;
@@ -225,22 +218,20 @@ class RoomInfoPanel {
                 }
             }
             
-            if (window.highlightSelected) {
-                window.highlightSelected();
+            if (window.app && window.app.mapRenderer) {
+                window.app.mapRenderer.highlightSelected();
             }
             
-            // Show success notification
-            if (window.campusNavigator?.showNotification) {
-                const roomInfo = window.roomDataManager.getRoomInfo(roomId);
-                window.campusNavigator.showNotification(`🎯 ${roomInfo.name} highlighted!`, 'success');
+            if (window.app) {
+                const roomInfo = this.roomDataManager.getRoomInfo(roomId);
+                window.app.showNotification(`🎯 ${roomInfo.name} highlighted!`, 'success');
             }
         }
     }
 
     showDirections(roomId) {
-        const roomInfo = window.roomDataManager.getRoomInfo(roomId);
+        const roomInfo = this.roomDataManager.getRoomInfo(roomId);
         
-        // Create a more detailed directions modal
         const directionsModal = document.createElement('div');
         directionsModal.className = 'modal-overlay';
         directionsModal.innerHTML = `
@@ -275,17 +266,13 @@ class RoomInfoPanel {
         
         document.body.appendChild(directionsModal);
         
-        // Close modal when clicking outside
         directionsModal.addEventListener('click', (e) => {
             if (e.target === directionsModal) {
                 directionsModal.remove();
             }
         });
         
-        // Track analytics
-        if (window.campusNavigator?.analytics) {
-            window.campusNavigator.analytics.trackEvent('directions_requested', `Requested directions to ${roomInfo.name}`, { roomId });
-        }
+        this.analytics.trackEvent('directions_requested', `Requested directions to ${roomInfo.name}`, { roomId });
     }
 
     generateDirections(roomInfo) {
@@ -316,6 +303,3 @@ class RoomInfoPanel {
         return directions;
     }
 }
-
-// Initialize room info panel
-window.roomInfoPanel = new RoomInfoPanel();

@@ -1,12 +1,13 @@
 // Admin room management functionality
 class AdminRoomManager {
-    constructor() {
+    constructor(roomDataManager, analytics) {
+        this.roomDataManager = roomDataManager;
+        this.analytics = analytics;
         this.setupAdminInterface();
         this.setupEventListeners();
     }
 
     setupAdminInterface() {
-        // Add room management section to admin page
         const adminContainer = document.querySelector('.admin-container');
         if (!adminContainer) return;
 
@@ -29,6 +30,7 @@ class AdminRoomManager {
                     <option value="Common Area">Common Area</option>
                     <option value="Dining">Dining</option>
                     <option value="Navigation">Navigation</option>
+                    <option value="Storage">Storage</option>
                 </select>
             </div>
             <div class="rooms-grid" id="admin-rooms-grid">
@@ -38,7 +40,10 @@ class AdminRoomManager {
 
         // Insert before charts section
         const chartsSection = document.querySelector('.charts-section');
-        if (chartsSection) {
+        const roomManagementContainer = document.getElementById('room-management-container');
+        if (roomManagementContainer) {
+            roomManagementContainer.appendChild(roomManagementSection);
+        } else if (chartsSection) {
             adminContainer.insertBefore(roomManagementSection, chartsSection);
         } else {
             adminContainer.appendChild(roomManagementSection);
@@ -86,7 +91,7 @@ class AdminRoomManager {
         const grid = document.getElementById('admin-rooms-grid');
         if (!grid) return;
 
-        const rooms = window.roomDataManager.getAllRooms();
+        const rooms = this.roomDataManager.getAllRooms();
         grid.innerHTML = '';
 
         Object.entries(rooms).forEach(([roomId, room]) => {
@@ -134,7 +139,7 @@ class AdminRoomManager {
         const searchTerm = document.getElementById('admin-room-search')?.value.toLowerCase() || '';
         const typeFilter = document.getElementById('room-type-filter')?.value || '';
         
-        const rooms = window.roomDataManager.getAllRooms();
+        const rooms = this.roomDataManager.getAllRooms();
         const grid = document.getElementById('admin-rooms-grid');
         if (!grid) return;
 
@@ -157,7 +162,7 @@ class AdminRoomManager {
     }
 
     showEditRoomModal(roomId) {
-        const room = window.roomDataManager.getRoomInfo(roomId);
+        const room = this.roomDataManager.getRoomInfo(roomId);
         this.showRoomModal('Edit Room', { roomId, ...room });
     }
 
@@ -191,11 +196,19 @@ class AdminRoomManager {
                             <option value="Common Area" ${roomData?.type === 'Common Area' ? 'selected' : ''}>Common Area</option>
                             <option value="Dining" ${roomData?.type === 'Dining' ? 'selected' : ''}>Dining</option>
                             <option value="Navigation" ${roomData?.type === 'Navigation' ? 'selected' : ''}>Navigation</option>
+                            <option value="Storage" ${roomData?.type === 'Storage' ? 'selected' : ''}>Storage</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="room-floor">Floor:</label>
-                        <input type="text" id="room-floor" value="${roomData?.floor || ''}" required>
+                        <select id="room-floor" required>
+                            <option value="">Select Floor</option>
+                            <option value="Basement" ${roomData?.floor === 'Basement' ? 'selected' : ''}>Basement</option>
+                            <option value="First Floor" ${roomData?.floor === 'First Floor' ? 'selected' : ''}>First Floor</option>
+                            <option value="Second Floor" ${roomData?.floor === 'Second Floor' ? 'selected' : ''}>Second Floor</option>
+                            <option value="Third Floor" ${roomData?.floor === 'Third Floor' ? 'selected' : ''}>Third Floor</option>
+                            <option value="Fourth Floor" ${roomData?.floor === 'Fourth Floor' ? 'selected' : ''}>Fourth Floor</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="room-description">Description:</label>
@@ -256,18 +269,16 @@ class AdminRoomManager {
             roomId = formData.name.replace(/\s+/g, '_').toUpperCase();
         }
 
-        window.roomDataManager.updateRoom(roomId, formData);
+        this.roomDataManager.updateRoom(roomId, formData);
         this.populateRoomsGrid();
 
         // Track analytics
-        if (window.campusNavigator?.analytics) {
-            window.campusNavigator.analytics.trackEvent('room_management', 
-                `${roomId ? 'Updated' : 'Added'} room: ${formData.name}`, { roomId });
-        }
+        this.analytics.trackEvent('room_management', 
+            `${roomId ? 'Updated' : 'Added'} room: ${formData.name}`, { roomId });
 
         // Show success notification
-        if (window.adminDashboard?.showNotification) {
-            window.adminDashboard.showNotification(
+        if (window.app) {
+            window.app.showNotification(
                 `Room ${roomId ? 'updated' : 'added'} successfully!`, 
                 'success'
             );
@@ -275,34 +286,24 @@ class AdminRoomManager {
     }
 
     deleteRoom(roomId) {
-        const room = window.roomDataManager.getRoomInfo(roomId);
+        const room = this.roomDataManager.getRoomInfo(roomId);
         
         if (confirm(`Are you sure you want to delete "${room.name}"? This action cannot be undone.`)) {
-            const rooms = window.roomDataManager.getAllRooms();
+            const rooms = this.roomDataManager.getAllRooms();
             delete rooms[roomId];
-            window.roomDataManager.rooms = rooms;
-            window.roomDataManager.saveRoomData();
+            this.roomDataManager.rooms = rooms;
+            this.roomDataManager.saveRoomData();
             
             this.populateRoomsGrid();
 
             // Track analytics
-            if (window.campusNavigator?.analytics) {
-                window.campusNavigator.analytics.trackEvent('room_management', 
-                    `Deleted room: ${room.name}`, { roomId });
-            }
+            this.analytics.trackEvent('room_management', 
+                `Deleted room: ${room.name}`, { roomId });
 
             // Show success notification
-            if (window.adminDashboard?.showNotification) {
-                window.adminDashboard.showNotification('Room deleted successfully!', 'success');
+            if (window.app) {
+                window.app.showNotification('Room deleted successfully!', 'success');
             }
         }
     }
 }
-
-// Initialize admin room manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Only initialize if we're on admin page or admin page exists
-    if (document.getElementById('admin-page')) {
-        window.adminRoomManager = new AdminRoomManager();
-    }
-});

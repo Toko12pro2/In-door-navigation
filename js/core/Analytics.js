@@ -13,7 +13,6 @@ class Analytics {
     }
 
     initSession() {
-        // Mark session as active
         const today = new Date().toDateString();
         const sessions = JSON.parse(localStorage.getItem('activeSessions') || '{}');
         sessions[today] = (sessions[today] || 0) + 1;
@@ -59,7 +58,6 @@ class Analytics {
 
         this.events.unshift(event);
         
-        // Keep only last 1000 events
         if (this.events.length > 1000) {
             this.events = this.events.slice(0, 1000);
         }
@@ -74,7 +72,6 @@ class Analytics {
     trackPageView(page) {
         this.stats.totalViews++;
         this.stats.pageViews[page] = (this.stats.pageViews[page] || 0) + 1;
-        
         this.trackEvent('page_view', `Viewed ${page} page`, { page: page });
     }
 
@@ -154,7 +151,6 @@ class Analytics {
     }
 
     getUsageData() {
-        // Generate usage data for the last 7 days
         const days = [];
         const today = new Date();
         
